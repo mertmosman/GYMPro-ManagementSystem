@@ -1,0 +1,109 @@
+﻿@{
+    ViewData["Title"] = "Ana Sayfa";
+
+    // Controller'dan gelen verileri doğru tipe dönüştürüyoruz (Casting)
+    var gyms = ViewBag.Gyms as List<GymApp.Web.Entities.Gym>;
+    var trainers = ViewBag.Trainers as List<GymApp.Web.Entities.Trainer>;
+    // Stats dinamik olduğu için cast etmeye gerek yok, direkt @ViewBag.Stats.TotalGyms diyebiliriz.
+}
+
+<div class="p-5 mb-4 bg-light rounded-3 shadow-sm text-center"
+     style="background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80'); background-size: cover; color: white;">
+    <div class="container-fluid py-5">
+        <h1 class="display-4 fw-bold">Hayalindeki Vücuda Ulaş</h1>
+        <p class="col-md-8 fs-4 mx-auto">Profesyonel eğitmenler ve modern salonlarla spora hemen başla. Yapay zeka destekli programını oluştur.</p>
+
+        @if (!User.Identity.IsAuthenticated)
+        {
+            <a class="btn btn-primary btn-lg px-4 gap-3" asp-controller="Account" asp-action="Register">Hemen Üye Ol</a>
+            <a class="btn btn-outline-light btn-lg px-4" asp-controller="Account" asp-action="Login">Giriş Yap</a>
+        }
+        else
+        {
+            <a class="btn btn-success btn-lg px-4" asp-controller="Appointment" asp-action="Create">Randevu Al</a>
+        }
+    </div>
+</div>
+
+<div class="container mb-5">
+    <div class="row text-center">
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm p-3">
+                <h3 class="text-primary fw-bold">@ViewBag.Stats.TotalGyms</h3>
+                <p class="text-muted">Spor Salonu</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm p-3">
+                <h3 class="text-success fw-bold">@ViewBag.Stats.TotalTrainers</h3>
+                <p class="text-muted">Profesyonel Antrenör</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm p-3">
+                <h3 class="text-warning fw-bold">%100</h3>
+                <p class="text-muted">Müşteri Memnuniyeti</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container mb-5">
+    <h2 class="text-center mb-4">Popüler Salonlarımız</h2>
+    <div class="row">
+        @if (gyms != null && gyms.Count > 0)
+        {
+            foreach (var item in gyms)
+            {
+                <div class="col-md-4 mb-3">
+                    <div class="card h-100 shadow-sm">
+                        <img src="https://source.unsplash.com/400x250/?gym,fitness&sig=@item.Id" class="card-img-top" alt="Gym">
+                        <div class="card-body">
+                            <h5 class="card-title">@item.Name</h5>
+                            <p class="card-text text-muted small"><i class="bi bi-geo-alt-fill"></i> @item.Address</p>
+                            @if (!User.Identity.IsAuthenticated)
+                            {
+                                <a asp-controller="Account" asp-action="Login" class="btn btn-outline-primary w-100">Giriş Yap ve İncele</a>
+                            }
+                            else
+                            {
+                                <a asp-controller="Appointment" asp-action="Create" class="btn btn-outline-primary w-100">Randevu Al</a>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="col-12 text-center text-muted">
+                <p>Henüz kayıtlı salon bulunmamaktadır.</p>
+            </div>
+        }
+    </div>
+</div>
+
+<div class="container mb-5 bg-light p-5 rounded">
+    <h2 class="text-center mb-4">Uzman Eğitmenlerimiz</h2>
+    <div class="row justify-content-center">
+        @if (trainers != null && trainers.Count > 0)
+        {
+            foreach (var item in trainers)
+            {
+                <div class="col-md-3 text-center mb-3">
+                    <div class="card border-0 bg-transparent">
+                        <img src="https://ui-avatars.com/api/?name=@item.FullName&background=random&size=150" class="rounded-circle mx-auto mb-3 shadow" alt="Trainer">
+                        <h5 class="fw-bold">@item.FullName</h5>
+                        <p class="text-primary">@item.Specialty</p>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="col-12 text-center text-muted">
+                <p>Henüz kayıtlı eğitmen bulunmamaktadır.</p>
+            </div>
+        }
+    </div>
+</div>

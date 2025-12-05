@@ -1,0 +1,38 @@
+[
+  {
+    "ContainingType": "GymApp.Web.Controllers.GymApiController",
+    "Method": "GetGyms",
+    "RelativePath": "api/GymApi/gyms",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GymApp.Web.Controllers.GymApiController",
+    "Method": "GetStats",
+    "RelativePath": "api/GymApi/stats",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GymApp.Web.Controllers.GymApiController",
+    "Method": "GetTrainers",
+    "RelativePath": "api/GymApi/trainers",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "specialty",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  }
+]
