@@ -1,0 +1,51 @@
+﻿@model GymApp.Web.Entities.Service
+
+@{
+    ViewData["Title"] = "Yeni Hizmet Ekle";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-4">
+    <div class="card shadow" style="max-width: 600px; margin: auto;">
+        <div class="card-header bg-success text-white">
+            <h4 class="mb-0">Yeni Hizmet Tanımla</h4>
+        </div>
+        <div class="card-body">
+            <form asp-action="Create" method="post">
+
+                <div class="mb-3">
+                    <label class="form-label">Spor Salonu</label>
+                    <select asp-for="GymId" class="form-select" asp-items="ViewBag.Gyms">
+                        <option value="">-- Salon Seçiniz --</option>
+                    </select>
+                    <span asp-validation-for="GymId" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Name" class="form-label">Hizmet Adı (Örn: Pilates)</label>
+                    <input asp-for="Name" class="form-control" />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="DurationMinutes" class="form-label">Süre (Dakika)</label>
+                        <input asp-for="DurationMinutes" type="number" class="form-control" placeholder="60" />
+                        <span asp-validation-for="DurationMinutes" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="Price" class="form-label">Ücret (TL)</label>
+                        <input asp-for="Price" type="number" step="0.01" class="form-control" />
+                        <span asp-validation-for="Price" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end gap-2">
+                    <a asp-action="Index" class="btn btn-secondary">İptal</a>
+                    <button type="submit" class="btn btn-success">Kaydet</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
