@@ -1,0 +1,129 @@
+﻿@model GymApp.Web.Entities.Trainer
+
+@{
+    ViewData["Title"] = "Antrenör Düzenle";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    // Viewbag verilerini alıyoruz
+    var allGyms = ViewBag.Gyms as List<GymApp.Web.Entities.Gym>;
+    var allServices = ViewBag.Services as List<GymApp.Web.Entities.Service>;
+
+    // Antrenörün mevcut seçimleri (Seçili checkboxlar için)
+    var selectedGymIds = ViewBag.SelectedGymIds as List<int> ?? new List<int>();
+    var selectedServiceIds = ViewBag.SelectedServiceIds as List<int> ?? new List<int>();
+}
+
+<div class="container mt-4">
+    <div class="card shadow">
+        <div class="card-header bg-warning text-dark">
+            <h4>Antrenör Düzenle</h4>
+        </div>
+        <div class="card-body">
+            <form asp-action="Edit" method="post">
+                <input type="hidden" asp-for="Id" />
+
+                <div class="mb-3">
+                    <label asp-for="FullName">Ad Soyad</label>
+                    <input asp-for="FullName" class="form-control" />
+                    <span asp-validation-for="FullName" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="Specialty">Uzmanlık</label>
+                    <input asp-for="Specialty" class="form-control" />
+                </div>
+
+                <hr />
+
+                <div class="mb-4">
+                    <label class="fw-bold mb-2">Çalıştığı Salonlar</label>
+                    <div class="d-flex flex-wrap gap-3">
+                        @if (allGyms != null)
+                        {
+                            foreach (var gym in allGyms)
+                            {
+                                // Antrenör bu salonda çalışıyor mu?
+                                bool isGymChecked = selectedGymIds.Contains(gym.Id);
+
+                                <div class="form-check card p-2 bg-light border-0">
+                                    <input class="form-check-input gym-checkbox" type="checkbox"
+                                           name="selectedGymIds" value="@gym.Id" id="gym_@gym.Id"
+                                           data-gym-id="@gym.Id"
+                                           @(isGymChecked ? "checked" : "")> <label class="form-check-label fw-bold" for="gym_@gym.Id">
+                                        @gym.Name
+                                    </label>
+                                </div>
+                            }
+                        }
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="fw-bold mb-2">Verebileceği Hizmetler</label>
+                    <div class="row" id="servicesContainer">
+                        @if (allServices != null)
+                        {
+                            foreach (var service in allServices)
+                            {
+                                // Antrenör bu hizmeti veriyor mu?
+                                bool isServiceChecked = selectedServiceIds.Contains(service.Id);
+
+                                <div class="col-md-6 service-item d-none" data-parent-gym="@service.GymId">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox"
+                                               name="selectedServiceIds" value="@service.Id" id="srv_@service.Id"
+                                               @(isServiceChecked ? "checked" : "")>
+                                        <label class="form-check-label" for="srv_@service.Id">
+                                            @service.Name
+                                            <span class="badge bg-secondary ms-1" style="font-size: 0.7em">
+                                                @(service.Gym != null ? service.Gym.Name : "Salonsuz")
+                                            </span>
+                                        </label>
+                                    </div>
+                                </div>
+                            }
+                        }
+                    </div>
+                    <div id="helperText" class="alert alert-warning py-1 mt-2">
+                        <i class="bi bi-info-circle"></i> Hizmetleri görmek için yukarıdan salon seçiniz.
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end gap-2">
+                    <a asp-action="Index" class="btn btn-secondary">İptal</a>
+                    <button type="submit" class="btn btn-warning">Güncelle</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+
+            // Salon kutusuna tıklandığında (Create ile aynı mantık)
+            $(".gym-checkbox").change(function () {
+                var gymId = $(this).data("gym-id");
+                var isChecked = $(this).is(":checked");
+
+                var relatedServices = $(`.service-item[data-parent-gym='${gymId}']`);
+
+                if (isChecked) {
+                    relatedServices.removeClass("d-none").hide().fadeIn();
+                    $("#helperText").hide();
+                } else {
+                    relatedServices.addClass("d-none");
+                    relatedServices.find("input[type='checkbox']").prop("checked", false);
+                }
+
+                if ($(".gym-checkbox:checked").length === 0) {
+                    $("#helperText").show();
+                }
+            });
+
+            // EKLENEN KISIM: Sayfa ilk açıldığında seçili olan salonları tetikle
+            // Böylece o salonlara ait hizmetler görünür hale gelir
+            $(".gym-checkbox:checked").trigger("change");
+        });
+    </script>
+}

@@ -1,0 +1,98 @@
+﻿@model GymApp.Web.Entities.Trainer
+
+@{
+    ViewData["Title"] = "Yeni Antrenör";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var allGyms = ViewBag.Gyms as List<GymApp.Web.Entities.Gym>;
+    var allServices = ViewBag.Services as List<GymApp.Web.Entities.Service>;
+}
+
+<div class="container mt-4">
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h4>Yeni Antrenör Ekle</h4>
+        </div>
+        <div class="card-body">
+            <form asp-action="Create" method="post">
+                <div class="mb-3">
+                    <label asp-for="FullName">Ad Soyad</label>
+                    <input asp-for="FullName" class="form-control" />
+                </div>
+                <div class="mb-3">
+                    <label asp-for="Specialty">Uzmanlık</label>
+                    <input asp-for="Specialty" class="form-control" />
+                </div>
+
+                <hr />
+
+                <div class="mb-4">
+                    <label class="fw-bold mb-2">Çalıştığı Salonlar</label>
+                    <div class="d-flex flex-wrap gap-3">
+                        @foreach (var gym in allGyms)
+                        {
+                            <div class="form-check card p-2 bg-light border-0">
+                                <input class="form-check-input gym-checkbox" type="checkbox"
+                                       name="selectedGymIds" value="@gym.Id" id="gym_@gym.Id"
+                                       data-gym-id="@gym.Id"> <label class="form-check-label fw-bold" for="gym_@gym.Id">
+                                    @gym.Name
+                                </label>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="fw-bold mb-2">Verebileceği Hizmetler</label>
+                    <div class="row" id="servicesContainer">
+                        @foreach (var service in allServices)
+                        {
+                            <div class="col-md-6 service-item d-none" data-gym-id="@service.GymId">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox"
+                                           name="selectedServiceIds" value="@service.Id" id="srv_@service.Id">
+                                    <label class="form-check-label" for="srv_@service.Id">
+                                        @service.Name
+                                        <span class="badge bg-secondary ms-1">@service.Gym.Name</span>
+                                    </label>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                    <small class="text-muted fst-italic" id="helperText">Lütfen önce yukarıdan bir salon seçiniz.</small>
+                </div>
+
+                <button type="submit" class="btn btn-success">Kaydet</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Salon kutusuna tıklandığında
+            $(".gym-checkbox").change(function () {
+                var gymId = $(this).data("gym-id");
+                var isChecked = $(this).is(":checked");
+
+                // İlgili salona ait hizmetleri bul
+                var relatedServices = $(`.service-item[data-gym-id='${gymId}']`);
+
+                if (isChecked) {
+                    // Salon seçildiyse hizmetleri göster
+                    relatedServices.removeClass("d-none").hide().fadeIn();
+                    $("#helperText").hide();
+                } else {
+                    // Salon iptal edildiyse hizmetleri gizle ve SEÇİMİ KALDIR
+                    relatedServices.addClass("d-none");
+                    relatedServices.find("input[type='checkbox']").prop("checked", false);
+                }
+
+                // Hiçbir salon seçili değilse uyarı yazısını göster
+                if ($(".gym-checkbox:checked").length === 0) {
+                    $("#helperText").show();
+                }
+            });
+        });
+    </script>
+}
