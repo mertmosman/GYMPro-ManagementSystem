@@ -1,0 +1,189 @@
+﻿@{
+    ViewData["Title"] = "Randevu Al";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Randevu Oluştur</h4>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Create" method="post" id="appointmentForm">
+
+                        <div class="mb-3">
+                            <label class="form-label">Spor Salonu</label>
+                            <select id="GymSelect" class="form-select" asp-items="ViewBag.Gyms">
+                                <option value="">-- Salon Seçiniz --</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Hizmet</label>
+                            <select id="ServiceSelect" name="serviceId" class="form-select" disabled>
+                                <option value="">-- Önce Salon Seçiniz --</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Antrenör</label>
+                            <select id="TrainerSelect" name="trainerId" class="form-select" disabled>
+                                <option value="">-- Önce Hizmet Seçiniz --</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Tarih</label>
+                            <input type="date" id="DateSelect" name="date" class="form-control" disabled />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Müsait Saatler <small class="text-muted">(İstediğiniz saatleri seçebilirsiniz)</small></label>
+                            <div id="SlotsContainer" class="d-flex flex-wrap gap-2">
+                                <span class="text-muted small">Lütfen yukarıdaki seçimleri yapınız.</span>
+                            </div>
+
+                            <div id="HiddenTimesContainer"></div>
+
+                            <div id="SummaryBox" class="alert alert-info mt-3 d-none">
+                                <strong>Özet:</strong> <span id="SummaryText"></span>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-success w-100" id="BtnSubmit" disabled>Randevuyu Onayla</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            var selectedSlots = [];
+            var basePrice = 0;
+
+            // 1. Gym Seçimi
+            $("#GymSelect").change(function () {
+                var gymId = $(this).val();
+                $("#ServiceSelect").empty().prop('disabled', true);
+
+                if (gymId) {
+                    $.getJSON("/Appointment/GetServicesByGym?gymId=" + gymId, function (data) {
+                        $("#ServiceSelect").append('<option value="">-- Hizmet Seçiniz --</option>');
+                        $.each(data, function (i, item) {
+                            // Fiyat bilgisini data attribute'a ekliyoruz
+                            $("#ServiceSelect").append(`<option value="${item.id}" data-price="${item.price}">${item.name} (${item.price} TL - ${item.durationMinutes} dk)</option>`);
+                        });
+                        $("#ServiceSelect").prop('disabled', false);
+                    });
+                }
+            });
+
+            // 2. Hizmet Seçimi
+            $("#ServiceSelect").change(function () {
+                var option = $(this).find(":selected");
+                basePrice = parseFloat(option.data("price")) || 0;
+
+                var serviceId = $(this).val();
+                $("#TrainerSelect").empty().prop('disabled', true);
+
+                if (serviceId) {
+                    $.getJSON("/Appointment/GetTrainersByService?serviceId=" + serviceId, function (data) {
+                         $("#TrainerSelect").append('<option value="">-- Antrenör Seçiniz --</option>');
+                         $.each(data, function (i, item) {
+                            $("#TrainerSelect").append(`<option value="${item.id}">${item.fullName} (${item.specialty})</option>`);
+                        });
+                        $("#TrainerSelect").prop('disabled', false);
+                    });
+                }
+            });
+
+            // 3. Antrenör Seçimi
+            $("#TrainerSelect").change(function () {
+                if ($(this).val()) $("#DateSelect").prop('disabled', false);
+            });
+
+            // 4. Tarih Seçimi -> Saatleri Getir
+            $("#DateSelect").change(function () {
+                var date = $(this).val();
+                var trainerId = $("#TrainerSelect").val();
+                var serviceId = $("#ServiceSelect").val();
+
+                if (date && trainerId && serviceId) {
+                    $("#SlotsContainer").html('<div class="spinner-border text-primary spinner-border-sm"></div> Yükleniyor...');
+
+                    $.getJSON(`/Appointment/GetAvailableSlots?trainerId=${trainerId}&serviceId=${serviceId}&date=${date}`, function (data) {
+                        $("#SlotsContainer").empty();
+                        selectedSlots = [];
+                        $("#SummaryBox").addClass("d-none");
+                        $("#BtnSubmit").prop("disabled", true);
+                        $("#HiddenTimesContainer").empty();
+
+                        if (data.message) {
+                            $("#SlotsContainer").html(`<div class="alert alert-warning">${data.message}</div>`);
+                        } else if (data.length === 0) {
+                             $("#SlotsContainer").html('<div class="alert alert-danger">Uygun saat yok.</div>');
+                        } else {
+                            $.each(data, function (i, time) {
+                                $("#SlotsContainer").append(
+                                    `<button type="button" class="btn btn-outline-primary slot-btn" data-time="${time}">${time}</button>`
+                                );
+                            });
+                        }
+                    });
+                }
+            });
+
+            // 5. SLOT TIKLAMA (Özgür Seçim - Kısıtlama Yok)
+            $(document).on("click", ".slot-btn", function () {
+                var time = $(this).data("time");
+                var btn = $(this);
+
+                if (selectedSlots.includes(time)) {
+                    // Çıkar
+                    selectedSlots = selectedSlots.filter(t => t !== time);
+                    btn.removeClass("active btn-primary").addClass("btn-outline-primary");
+                } else {
+                    // Ekle
+                    selectedSlots.push(time);
+                    selectedSlots.sort();
+                    btn.removeClass("btn-outline-primary").addClass("active btn-primary");
+                }
+                updateSummary();
+            });
+
+            function updateSummary() {
+                // Inputları temizle
+                $("#HiddenTimesContainer").empty();
+
+                if (selectedSlots.length > 0) {
+                    var count = selectedSlots.length;
+                    var totalPrice = count * basePrice;
+                    var timeListString = selectedSlots.join(", ");
+
+                    // Özet Metni
+                    $("#SummaryText").html(`
+                        <strong>${count} Adet Randevu</strong><br>
+                        Saatler: ${timeListString}<br>
+                        Toplam Tutar: <strong>${totalPrice} TL</strong>
+                    `);
+
+                    $("#SummaryBox").removeClass("d-none");
+                    $("#BtnSubmit").prop("disabled", false);
+
+                    // Backend'e gidecek gizli inputları oluştur (List<TimeSpan> times için)
+                    selectedSlots.forEach(function(time) {
+                        $("#HiddenTimesContainer").append(`<input type="hidden" name="times" value="${time}" />`);
+                    });
+
+                } else {
+                    $("#SummaryBox").addClass("d-none");
+                    $("#BtnSubmit").prop("disabled", true);
+                }
+            }
+        });
+    </script>
+}

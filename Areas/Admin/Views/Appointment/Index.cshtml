@@ -1,0 +1,77 @@
+﻿@model List<GymApp.Web.Entities.Appointment>
+
+@{
+    ViewData["Title"] = "Randevu Talepleri";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-4">Randevu Yönetimi</h2>
+
+    <div class="card shadow">
+        <div class="card-body">
+            <table class="table table-hover align-middle">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Tarih</th>
+                        <th>Üye</th>
+                        <th>Hizmet / Antrenör</th>
+                        <th>Durum</th>
+                        <th>İşlemler</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        // Satır rengi: Beklemedeyse sarımsı olsun
+                        string rowClass = item.Status == "Beklemede" ? "table-warning" : "";
+
+                        <tr class="@rowClass">
+                            <td>
+                                @item.AppointmentDate.ToString("dd.MM.yyyy") <br />
+                                <span class="fw-bold">@item.AppointmentDate.ToString("HH:mm")</span>
+                            </td>
+                            <td>
+                                @item.AppUser.FullName <br />
+                                <small class="text-muted">@item.AppUser.Email</small>
+                            </td>
+                            <td>
+                                <span class="badge bg-info text-dark">@item.Service.Name</span> <br />
+                                <small>@item.Trainer.FullName</small>
+                            </td>
+                            <td>
+                                @if (item.Status == "Beklemede")
+                                {
+                                    <span class="badge bg-warning text-dark">Onay Bekliyor</span>
+                                }
+                                else if (item.Status == "Onaylandı")
+                                {
+                                    <span class="badge bg-success">Onaylandı</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger">Reddedildi</span>
+                                }
+                            </td>
+                            <td>
+                                @if (item.Status == "Beklemede")
+                                {
+                                    <a asp-action="Approve" asp-route-id="@item.Id" class="btn btn-sm btn-success">
+                                        <i class="bi bi-check-lg"></i> Onayla
+                                    </a>
+                                    <a asp-action="Reject" asp-route-id="@item.Id" class="btn btn-sm btn-danger">
+                                        <i class="bi bi-x-lg"></i> Reddet
+                                    </a>
+                                }
+                                else
+                                {
+                                    <span class="text-muted small">İşlem yapıldı</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
