@@ -1,73 +1,118 @@
 ﻿@{
     ViewData["Title"] = "Ana Sayfa";
-
-    // Controller'dan gelen verileri doğru tipe dönüştürüyoruz (Casting)
     var gyms = ViewBag.Gyms as List<GymApp.Web.Entities.Gym>;
     var trainers = ViewBag.Trainers as List<GymApp.Web.Entities.Trainer>;
-    // Stats dinamik olduğu için cast etmeye gerek yok, direkt @ViewBag.Stats.TotalGyms diyebiliriz.
 }
 
-<div class="p-5 mb-4 bg-light rounded-3 shadow-sm text-center"
-     style="background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80'); background-size: cover; color: white;">
-    <div class="container-fluid py-5">
-        <h1 class="display-4 fw-bold">Hayalindeki Vücuda Ulaş</h1>
-        <p class="col-md-8 fs-4 mx-auto">Profesyonel eğitmenler ve modern salonlarla spora hemen başla. Yapay zeka destekli programını oluştur.</p>
+<div class="position-relative w-100 overflow-hidden"
+     style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); min-height: 550px; display: flex; align-items: center;">
 
-        @if (!User.Identity.IsAuthenticated)
-        {
-            <a class="btn btn-primary btn-lg px-4 gap-3" asp-controller="Account" asp-action="Register">Hemen Üye Ol</a>
-            <a class="btn btn-outline-light btn-lg px-4" asp-controller="Account" asp-action="Login">Giriş Yap</a>
-        }
-        else
-        {
-            <a class="btn btn-success btn-lg px-4" asp-controller="Appointment" asp-action="Create">Randevu Al</a>
-        }
-    </div>
-</div>
+    <div style="position: absolute; top: 0; right: 0; bottom: 0; left: 0;
+                background: url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80') center/cover;
+                opacity: 0.2; mix-blend-mode: luminosity;"></div>
 
-<div class="container mb-5">
-    <div class="row text-center">
-        <div class="col-md-4">
-            <div class="card border-0 shadow-sm p-3">
-                <h3 class="text-primary fw-bold">@ViewBag.Stats.TotalGyms</h3>
-                <p class="text-muted">Spor Salonu</p>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card border-0 shadow-sm p-3">
-                <h3 class="text-success fw-bold">@ViewBag.Stats.TotalTrainers</h3>
-                <p class="text-muted">Profesyonel Antrenör</p>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card border-0 shadow-sm p-3">
-                <h3 class="text-warning fw-bold">%100</h3>
-                <p class="text-muted">Müşteri Memnuniyeti</p>
+    <div class="container position-relative text-white py-5">
+        <div class="row align-items-center">
+            <div class="col-lg-7">
+                <span class="badge bg-primary bg-opacity-25 text-primary border border-primary mb-3 px-3 py-2 rounded-pill">
+                    🚀 Yeni Nesil Spor Deneyimi
+                </span>
+                <h1 class="display-3 fw-bolder mb-3 lh-sm">
+                    Sınırlarını <span class="text-transparent bg-clip-text" style="background: linear-gradient(to right, #6366f1, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Zorla</span>,<br>
+                    Geleceği İnşa Et.
+                </h1>
+                <p class="lead text-gray-300 mb-4" style="color: #cbd5e1; max-width: 600px;">
+                    Yapay zeka destekli analizler, profesyonel antrenörler ve premium salonlar tek bir platformda.
+                </p>
+                <div class="d-flex gap-3">
+                    @if (!User.Identity.IsAuthenticated)
+                    {
+                        <a class="btn btn-primary btn-lg px-5 shadow-lg" asp-controller="Account" asp-action="Register">Hemen Başla</a>
+                        <a class="btn btn-outline-light btn-lg px-4" asp-controller="Account" asp-action="Login">Giriş</a>
+                    }
+                    else
+                    {
+                        <a class="btn btn-success btn-lg px-5 shadow-lg border-0" style="background-color: #10b981;" asp-controller="Appointment" asp-action="Create">
+                            <i class="bi bi-calendar-plus me-2"></i>Randevu Al
+                        </a>
+                    }
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-<div class="container mb-5">
-    <h2 class="text-center mb-4">Popüler Salonlarımız</h2>
-    <div class="row">
+<div class="container position-relative" style="margin-top: -60px; z-index: 10;">
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card border-0 shadow-lg h-100 rounded-4 text-center py-4 hover-card">
+                <div class="card-body">
+                    <div class="icon-box mx-auto mb-3 bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 60px; height: 60px; font-size: 1.5rem;">
+                        <i class="bi bi-buildings"></i>
+                    </div>
+                    <h2 class="fw-bold mb-0 text-dark">@ViewBag.Stats.TotalGyms</h2>
+                    <p class="text-muted small text-uppercase fw-bold">Premium Salon</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-lg h-100 rounded-4 text-center py-4 hover-card">
+                <div class="card-body">
+                    <div class="icon-box mx-auto mb-3 bg-success bg-opacity-10 text-success rounded-circle d-flex align-items-center justify-content-center" style="width: 60px; height: 60px; font-size: 1.5rem;">
+                        <i class="bi bi-people-fill"></i>
+                    </div>
+                    <h2 class="fw-bold mb-0 text-dark">@ViewBag.Stats.TotalTrainers</h2>
+                    <p class="text-muted small text-uppercase fw-bold">Uzman Eğitmen</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-lg h-100 rounded-4 text-center py-4 hover-card">
+                <div class="card-body">
+                    <div class="icon-box mx-auto mb-3 bg-warning bg-opacity-10 text-warning rounded-circle d-flex align-items-center justify-content-center" style="width: 60px; height: 60px; font-size: 1.5rem;">
+                        <i class="bi bi-star-fill"></i>
+                    </div>
+                    <h2 class="fw-bold mb-0 text-dark">%100</h2>
+                    <p class="text-muted small text-uppercase fw-bold">Memnuniyet</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container py-5 my-5">
+    <div class="d-flex justify-content-between align-items-end mb-4">
+        <div>
+            <h6 class="text-primary fw-bold text-uppercase ls-md">Keşfet</h6>
+            <h2 class="fw-bold text-dark">Popüler Salonlar</h2>
+        </div>
+        <a href="#" class="btn btn-link text-decoration-none">Tümünü Gör <i class="bi bi-arrow-right"></i></a>
+    </div>
+
+    <div class="row g-4">
         @if (gyms != null && gyms.Count > 0)
         {
             foreach (var item in gyms)
             {
-                <div class="col-md-4 mb-3">
-                    <div class="card h-100 shadow-sm">
-                        <img src="https://source.unsplash.com/400x250/?gym,fitness&sig=@item.Id" class="card-img-top" alt="Gym">
-                        <div class="card-body">
-                            <h5 class="card-title">@item.Name</h5>
-                            <p class="card-text text-muted small"><i class="bi bi-geo-alt-fill"></i> @item.Address</p>
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden hover-card">
+                        <div class="position-relative">
+                            <img src="https://source.unsplash.com/400x250/?gym,fitness&sig=@item.Id" class="card-img-top" alt="@item.Name" style="height: 220px; object-fit: cover;">
+                            <span class="position-absolute top-0 end-0 m-3 badge bg-white text-dark shadow-sm px-3 py-2 rounded-pill">
+                                <i class="bi bi-star-fill text-warning me-1"></i> 4.9
+                            </span>
+                        </div>
+                        <div class="card-body p-4">
+                            <h5 class="card-title fw-bold mb-2">@item.Name</h5>
+                            <p class="text-muted small mb-4"><i class="bi bi-geo-alt me-1 text-danger"></i> @item.Address</p>
+
                             @if (!User.Identity.IsAuthenticated)
                             {
-                                <a asp-controller="Account" asp-action="Login" class="btn btn-outline-primary w-100">Giriş Yap ve İncele</a>
+                                <a asp-controller="Account" asp-action="Login" class="btn btn-outline-secondary w-100 rounded-3 py-2">Giriş Yap</a>
                             }
                             else
                             {
-                                <a asp-controller="Appointment" asp-action="Create" class="btn btn-outline-primary w-100">Randevu Al</a>
+                                <a asp-controller="Appointment" asp-action="Create" class="btn btn-primary w-100 rounded-3 py-2 bg-gradient border-0">Randevu Al</a>
                             }
                         </div>
                     </div>
@@ -76,34 +121,51 @@
         }
         else
         {
-            <div class="col-12 text-center text-muted">
-                <p>Henüz kayıtlı salon bulunmamaktadır.</p>
+            <div class="col-12 text-center py-5 bg-white rounded-3 shadow-sm">
+                <i class="bi bi-inbox fs-1 text-muted"></i>
+                <p class="text-muted mt-2">Henüz kayıtlı salon bulunmuyor.</p>
             </div>
         }
     </div>
 </div>
 
-<div class="container mb-5 bg-light p-5 rounded">
-    <h2 class="text-center mb-4">Uzman Eğitmenlerimiz</h2>
-    <div class="row justify-content-center">
-        @if (trainers != null && trainers.Count > 0)
-        {
-            foreach (var item in trainers)
+<div class="bg-white py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <span class="text-primary fw-bold text-uppercase">Takımımız</span>
+            <h2 class="fw-bold mt-2">Profesyonel Eğitmenler</h2>
+            <p class="text-muted mx-auto" style="max-width: 600px;">Alanında uzman, sertifikalı ve deneyimli antrenörlerimizle hedeflerinize daha hızlı ulaşın.</p>
+        </div>
+
+        <div class="row justify-content-center g-4">
+            @if (trainers != null && trainers.Count > 0)
             {
-                <div class="col-md-3 text-center mb-3">
-                    <div class="card border-0 bg-transparent">
-                        <img src="https://ui-avatars.com/api/?name=@item.FullName&background=random&size=150" class="rounded-circle mx-auto mb-3 shadow" alt="Trainer">
-                        <h5 class="fw-bold">@item.FullName</h5>
-                        <p class="text-primary">@item.Specialty</p>
+                foreach (var item in trainers)
+                {
+                    <div class="col-md-6 col-lg-3">
+                        <div class="card border-0 text-center hover-card p-3 h-100 bg-transparent">
+                            <div class="position-relative mx-auto mb-3" style="width: 140px; height: 140px;">
+                                <img src="https://ui-avatars.com/api/?name=@item.FullName&background=eef2ff&color=4f46e5&size=150"
+                                     class="rounded-circle shadow-sm w-100 h-100 object-fit-cover border border-4 border-white" alt="Trainer">
+                                <span class="position-absolute bottom-0 end-0 bg-success p-2 rounded-circle border border-white"></span>
+                            </div>
+                            <h5 class="fw-bold mb-1">@item.FullName</h5>
+                            <p class="text-primary small fw-bold mb-2">@item.Specialty</p>
+                            <div class="d-flex justify-content-center gap-2 mt-2 opacity-50">
+                                <i class="bi bi-instagram cursor-pointer"></i>
+                                <i class="bi bi-twitter cursor-pointer"></i>
+                                <i class="bi bi-linkedin cursor-pointer"></i>
+                            </div>
+                        </div>
                     </div>
+                }
+            }
+            else
+            {
+                <div class="col-12 text-center">
+                    <p class="text-muted">Kayıtlı eğitmen bulunamadı.</p>
                 </div>
             }
-        }
-        else
-        {
-            <div class="col-12 text-center text-muted">
-                <p>Henüz kayıtlı eğitmen bulunmamaktadır.</p>
-            </div>
-        }
+        </div>
     </div>
 </div>
