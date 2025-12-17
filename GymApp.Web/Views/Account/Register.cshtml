@@ -3,56 +3,95 @@
     ViewData["Title"] = "Kayıt Ol";
 }
 
-<div class="row justify-content-center mt-5">
-    <div class="col-md-4">
-        <div class="card shadow">
-            <div class="card-body">
-                <h3 class="text-center mb-4">Üye Ol</h3>
-                <form asp-action="Register" method="post">
-                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
 
-                    <div class="mb-3">
-                        <label>Ad Soyad</label>
-                        <input asp-for="FullName" class="form-control" />
-                        <span asp-validation-for="FullName" class="text-danger"></span>
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                <div class="h-1 bg-gradient-primary" style="height: 6px; background: linear-gradient(to right, #4f46e5, #06b6d4);"></div>
+
+                <div class="card-body p-4 p-md-5">
+                    <div class="text-center mb-4">
+                        <h2 class="fw-bold mb-1">Aramıza Katıl</h2>
+                        <p class="text-muted">Profesyonel spor deneyimi için üyeliğini oluştur.</p>
                     </div>
 
-                    <div class="mb-3">
-                        <label>Doğum Tarihi</label>
-                        <input asp-for="BirthDate" class="form-control" type="date" />
-                        <span asp-validation-for="BirthDate" class="text-danger"></span>
-                    </div>
+                    <form asp-action="Register" method="post">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger mb-3 small border-0 shadow-sm"></div>
 
-                    <div class="mb-3">
-                        <label>Cinsiyet</label>
-                        <select asp-for="Gender" class="form-select">
-                            <option value="">Seçiniz...</option>
-                            <option value="Erkek">Erkek</option>
-                            <option value="Kadın">Kadın</option>
-                        </select>
-                        <span asp-validation-for="Gender" class="text-danger"></span>
-                    </div>
+                        <div class="row g-3 mb-3">
+                            <div class="col-12">
+                                <div class="form-floating">
+                                    <input asp-for="FullName" class="form-control bg-light border-0" placeholder="Ad Soyad" />
+                                    <label asp-for="FullName" class="text-muted">Ad Soyad</label>
+                                    <span asp-validation-for="FullName" class="text-danger small"></span>
+                                </div>
+                            </div>
 
-                    <div class="mb-3">
-                        <label>Email</label>
-                        <input asp-for="Email" class="form-control" />
-                        <span asp-validation-for="Email" class="text-danger"></span>
-                    </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input asp-for="BirthDate" type="date" class="form-control bg-light border-0" placeholder="Doğum Tarihi" />
+                                    <label asp-for="BirthDate" class="text-muted">Doğum Tarihi</label>
+                                    <span asp-validation-for="BirthDate" class="text-danger small"></span>
+                                </div>
+                            </div>
 
-                    <div class="mb-3">
-                        <label>Şifre</label>
-                        <input asp-for="Password" class="form-control" />
-                        <span asp-validation-for="Password" class="text-danger"></span>
-                    </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <select asp-for="Gender" class="form-select bg-light border-0">
+                                        <option value="" selected disabled>Seçiniz...</option>
+                                        <option value="Erkek">Erkek</option>
+                                        <option value="Kadın">Kadın</option>
+                                    </select>
+                                    <label asp-for="Gender" class="text-muted">Cinsiyet</label>
+                                    <span asp-validation-for="Gender" class="text-danger small"></span>
+                                </div>
+                            </div>
+                        </div>
 
-                    <div class="mb-3">
-                        <label>Şifre Tekrar</label>
-                        <input asp-for="ConfirmPassword" class="form-control" />
-                        <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
-                    </div>
+                        <div class="form-floating mb-3">
+                            <input asp-for="Email" class="form-control bg-light border-0" placeholder="E-posta" />
+                            <label asp-for="Email" class="text-muted">E-posta Adresi</label>
+                            <span asp-validation-for="Email" class="text-danger small"></span>
+                        </div>
 
-                    <button type="submit" class="btn btn-success w-100">Kayıt Ol</button>
-                </form>
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input asp-for="Password" type="password" class="form-control bg-light border-0" placeholder="Şifre" />
+                                    <label asp-for="Password" class="text-muted">Şifre</label>
+                                    <span asp-validation-for="Password" class="text-danger small"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input asp-for="ConfirmPassword" type="password" class="form-control bg-light border-0" placeholder="Şifre Tekrar" />
+                                    <label asp-for="ConfirmPassword" class="text-muted">Şifre Tekrar</label>
+                                    <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-check mb-4">
+                            <input class="form-check-input" type="checkbox" id="terms" required>
+                            <label class="form-check-label small text-muted" for="terms">
+                                <a href="#" class="text-decoration-none">Üyelik Sözleşmesi</a>'ni okudum ve kabul ediyorum.
+                            </label>
+                        </div>
+
+                        <div class="d-grid mb-4">
+                            <button type="submit" class="btn btn-success btn-lg fw-bold shadow-sm"
+                                    style="background: linear-gradient(to right, #10b981, #059669); border:none;">
+                                Kaydı Tamamla
+                            </button>
+                        </div>
+
+                        <div class="text-center">
+                            <span class="text-muted small">Zaten üye misin?</span>
+                            <a asp-action="Login" class="fw-bold text-decoration-none ms-1 text-primary">Giriş Yap</a>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>

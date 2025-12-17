@@ -5,44 +5,210 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2>Kayıtlı Üyeler</h2>
-        <a asp-action="Create" class="btn btn-primary">
-            <i class="bi bi-person-plus-fill"></i> Yeni Üye Ekle
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold text-dark mb-1">Üye Yönetimi</h2>
+            <p class="text-muted mb-0">Toplam <span class="fw-bold text-primary" id="totalCount">@Model.Count</span> kayıtlı üye bulunuyor.</p>
+        </div>
+        <a asp-action="Create" class="btn btn-primary shadow-sm px-4">
+            <i class="bi bi-person-plus-fill me-2"></i>Yeni Üye Ekle
         </a>
     </div>
 
-    <table class="table table-hover align-middle">
-        <thead class="table-dark">
-            <tr>
-                <th>Ad Soyad</th>
-                <th>Email</th>
-                <th>Cinsiyet</th>
-                <th>Yaş</th>
-                <th>İşlemler</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model)
-            {
-                <tr>
-                    <td>@item.FullName</td>
-                    <td>@item.Email</td>
-                    <td>@item.Gender</td>
-                    <td>
-                        @(DateTime.Now.Year - item.BirthDate.Year)
-                    </td>
-                    <td>
-                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning">Düzenle</a>
-                        <a asp-action="Delete" asp-route-id="@item.Id"
-                           class="btn btn-sm btn-danger"
-                           onclick="return confirm('@item.FullName kullanıcısını silmek istediğinize emin misiniz?');">
-                            Sil
-                        </a>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white">
+        <div class="p-3 border-bottom bg-light">
+            <div class="input-group">
+                <span class="input-group-text border-0 bg-white ps-3"><i class="bi bi-search text-muted"></i></span>
+                <input type="text" id="searchInput" class="form-control border-0 bg-white" placeholder="İsim veya E-posta ile ara..." autocomplete="off">
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light">
+                    <tr>
+                        <th class="ps-4 py-3 text-secondary text-uppercase small fw-bold">Üye Bilgisi</th>
+                        <th class="py-3 text-secondary text-uppercase small fw-bold">İletişim</th>
+                        <th class="py-3 text-secondary text-uppercase small fw-bold">Demografik</th>
+                        <th class="pe-4 py-3 text-secondary text-uppercase small fw-bold text-end">İşlemler</th>
+                    </tr>
+                </thead>
+                <tbody id="memberTableBody">
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td class="ps-4 py-3">
+                                <div class="d-flex align-items-center">
+                                    <img src="https://ui-avatars.com/api/?name=@item.FullName&background=random&color=fff&size=128"
+                                         class="rounded-circle me-3 shadow-sm"
+                                         width="45" height="45" alt="Avatar">
+                                    <div>
+                                        <h6 class="mb-0 fw-bold text-dark">@item.FullName</h6>
+                                        <small class="text-muted" style="font-size: 0.75rem;">ID: @item.Id.ToString().Substring(0, 8)...</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="text-dark">@item.Email</span>
+                            </td>
+                            <td>
+                                <div class="d-flex gap-2">
+                                    @if (item.Gender == "Erkek")
+                                    {
+                                        <span class="badge bg-soft-info text-primary border border-primary border-opacity-10 rounded-pill">
+                                            <i class="bi bi-gender-male me-1"></i>Erkek
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-soft-danger text-danger border border-danger border-opacity-10 rounded-pill">
+                                            <i class="bi bi-gender-female me-1"></i>Kadın
+                                        </span>
+                                    }
+
+                                    <span class="badge bg-light text-secondary border rounded-pill">
+                                        @(DateTime.Now.Year - item.BirthDate.Year) Yaş
+                                    </span>
+                                </div>
+                            </td>
+                            <td class="pe-4 py-3 text-end">
+                                <div class="btn-group">
+                                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-light btn-sm text-dark border shadow-sm me-2" data-bs-toggle="tooltip" title="Düzenle">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </a>
+                                    <a asp-action="Delete" asp-route-id="@item.Id"
+                                       class="btn btn-light btn-sm text-danger border shadow-sm"
+                                       onclick="return confirm('Silmek istediğinize emin misiniz?');"
+                                       data-bs-toggle="tooltip" title="Sil">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div id="loadingSpinner" class="text-center py-4 d-none">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Yükleniyor...</span>
+            </div>
+        </div>
+
+        <div id="noResults" class="text-center py-5 d-none">
+            <i class="bi bi-search display-6 text-muted opacity-50 mb-3 d-block"></i>
+            <p class="text-muted">Aradığınız kriterlere uygun üye bulunamadı.</p>
+        </div>
+    </div>
 </div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            let typingTimer;
+            const doneTypingInterval = 300; // Kullanıcı yazmayı bıraktıktan 300ms sonra ara (Performans için)
+            const $input = $('#searchInput');
+            const $tableBody = $('#memberTableBody');
+            const $loading = $('#loadingSpinner');
+            const $noResults = $('#noResults');
+            const $totalCount = $('#totalCount');
+
+            // Kullanıcı tuşa bastığında
+            $input.on('keyup', function () {
+                clearTimeout(typingTimer);
+                typingTimer = setTimeout(performSearch, doneTypingInterval);
+            });
+
+            // Kullanıcı klavyeden 'silerken' de tetiklensin
+            $input.on('keydown', function () {
+                clearTimeout(typingTimer);
+            });
+
+            function performSearch() {
+                var query = $input.val();
+
+                // UX: Tabloyu silmeden önce hafif bir opaklık verelim (loading hissi)
+                $tableBody.css('opacity', '0.5');
+                $loading.removeClass('d-none');
+                $noResults.addClass('d-none');
+
+                $.ajax({
+                    url: '/Admin/Member/Search', // Controller'daki metodumuz
+                    type: 'GET',
+                    data: { q: query },
+                    success: function (data) {
+                        $tableBody.empty(); // Mevcut satırları temizle
+                        $tableBody.css('opacity', '1');
+                        $loading.addClass('d-none');
+
+                        // Sayaç güncelle
+                        $totalCount.text(data.length);
+
+                        if (data.length === 0) {
+                            $noResults.removeClass('d-none');
+                            return;
+                        }
+
+                        // Gelen veriyi döngüye alıp HTML oluşturuyoruz
+                        $.each(data, function (index, user) {
+
+                            // Yaş hesabı
+                            var currentYear = new Date().getFullYear();
+                            var age = currentYear - user.birthYear;
+
+                            // Cinsiyet Badge HTML
+                            var genderBadge = '';
+                            if (user.gender === 'Erkek') {
+                                genderBadge = `<span class="badge bg-soft-info text-primary border border-primary border-opacity-10 rounded-pill"><i class="bi bi-gender-male me-1"></i>Erkek</span>`;
+                            } else {
+                                genderBadge = `<span class="badge bg-soft-danger text-danger border border-danger border-opacity-10 rounded-pill"><i class="bi bi-gender-female me-1"></i>Kadın</span>`;
+                            }
+
+                            // Satır HTML
+                            var row = `
+                                <tr class="animate__animated animate__fadeIn">
+                                    <td class="ps-4 py-3">
+                                        <div class="d-flex align-items-center">
+                                            <img src="https://ui-avatars.com/api/?name=${user.fullName}&background=random&color=fff&size=128"
+                                                 class="rounded-circle me-3 shadow-sm" width="45" height="45">
+                                            <div>
+                                                <h6 class="mb-0 fw-bold text-dark">${user.fullName}</h6>
+                                                <small class="text-muted" style="font-size: 0.75rem;">ID: ${user.id.substring(0,8)}...</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td><span class="text-dark">${user.email}</span></td>
+                                    <td>
+                                        <div class="d-flex gap-2">
+                                            ${genderBadge}
+                                            <span class="badge bg-light text-secondary border rounded-pill">${age} Yaş</span>
+                                        </div>
+                                    </td>
+                                    <td class="pe-4 py-3 text-end">
+                                        <div class="btn-group">
+                                            <a href="/Admin/Member/Edit/${user.id}" class="btn btn-light btn-sm text-dark border shadow-sm me-2" title="Düzenle">
+                                                <i class="bi bi-pencil-square"></i>
+                                            </a>
+                                            <a href="/Admin/Member/Delete/${user.id}" class="btn btn-light btn-sm text-danger border shadow-sm"
+                                               onclick="return confirm('Silmek istediğinize emin misiniz?');" title="Sil">
+                                                <i class="bi bi-trash"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            `;
+                            $tableBody.append(row);
+                        });
+                    },
+                    error: function (err) {
+                        console.error("Arama hatası:", err);
+                        $loading.addClass('d-none');
+                        $tableBody.css('opacity', '1');
+                    }
+                });
+            }
+        });
+    </script>
+}

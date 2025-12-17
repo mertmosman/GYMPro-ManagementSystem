@@ -5,54 +5,77 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="container mt-4">
-    <div class="card shadow">
-        <div class="card-header bg-primary text-white">
-            <h4>Yeni Üye Kaydı</h4>
-        </div>
-        <div class="card-body">
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
             <form asp-action="Create" method="post">
-                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-                <div class="mb-3">
-                    <label>Ad Soyad</label>
-                    <input asp-for="FullName" class="form-control" />
-                    <span asp-validation-for="FullName" class="text-danger"></span>
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2 class="fw-bold mb-0">Yeni Üye Kaydı</h2>
+                    <a asp-action="Index" class="btn btn-outline-secondary btn-sm">Listeye Dön</a>
                 </div>
 
-                <div class="mb-3">
-                    <label>Email</label>
-                    <input asp-for="Email" class="form-control" />
-                    <span asp-validation-for="Email" class="text-danger"></span>
-                </div>
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger mb-4 shadow-sm border-0"></div>
 
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label>Doğum Tarihi</label>
-                        <input asp-for="BirthDate" type="date" class="form-control" />
+                <div class="card border-0 shadow-sm rounded-4 mb-4">
+                    <div class="card-body p-4">
+                        <h5 class="fw-bold text-primary mb-4"><i class="bi bi-person-vcard me-2"></i>Kişisel Bilgiler</h5>
+
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label class="form-label fw-bold small text-muted">AD SOYAD</label>
+                                <input asp-for="FullName" class="form-control form-control-lg bg-light border-0" placeholder="Örn: Ahmet Yılmaz" />
+                                <span asp-validation-for="FullName" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label fw-bold small text-muted">E-POSTA ADRESİ</label>
+                                <input asp-for="Email" class="form-control bg-light border-0" placeholder="ornek@email.com" />
+                                <span asp-validation-for="Email" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold small text-muted">DOĞUM TARİHİ</label>
+                                <input asp-for="BirthDate" type="date" class="form-control bg-light border-0" />
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold small text-muted">CİNSİYET</label>
+                                <select asp-for="Gender" class="form-select bg-light border-0">
+                                    <option value="Erkek">Erkek</option>
+                                    <option value="Kadın">Kadın</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-md-6 mb-3">
-                        <label>Cinsiyet</label>
-                        <select asp-for="Gender" class="form-select">
-                            <option value="Erkek">Erkek</option>
-                            <option value="Kadın">Kadın</option>
-                        </select>
+                </div>
+
+                <div class="card border-0 shadow-sm rounded-4 mb-4">
+                    <div class="card-body p-4">
+                        <h5 class="fw-bold text-danger mb-4"><i class="bi bi-shield-lock me-2"></i>Güvenlik</h5>
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold small text-muted">ŞİFRE</label>
+                                <input asp-for="Password" type="password" class="form-control bg-light border-0" />
+                                <span asp-validation-for="Password" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold small text-muted">ŞİFRE TEKRAR</label>
+                                <input asp-for="ConfirmPassword" type="password" class="form-control bg-light border-0" />
+                                <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <div class="mb-3">
-                    <label>Geçici Şifre</label>
-                    <input asp-for="Password" class="form-control" />
-                    <span asp-validation-for="Password" class="text-danger"></span>
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary btn-lg shadow fw-bold">
+                        <i class="bi bi-check-lg me-2"></i>Üyeyi Kaydet
+                    </button>
+                    <a asp-action="Index" class="btn btn-light text-muted">İptal Et</a>
                 </div>
-                <div class="mb-3">
-                    <label>Şifre Tekrar</label>
-                    <input asp-for="ConfirmPassword" class="form-control" />
-                    <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
-                </div>
-
-                <button type="submit" class="btn btn-success">Kaydet</button>
-                <a asp-action="Index" class="btn btn-secondary">İptal</a>
             </form>
         </div>
     </div>

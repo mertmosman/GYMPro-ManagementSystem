@@ -109,7 +109,35 @@ namespace GymApp.Web.Areas.Admin.Controllers
             return View(model);
         }
 
-        // 6. SİLME (Soft Delete + Kick User)
+        // 6. ARAMA (GET)
+        [HttpGet]
+        public async Task<IActionResult> Search(string q)
+        {
+            // UserManager kullandığını varsayıyorum
+            var query = _userManager.Users.AsQueryable();
+
+            if (!string.IsNullOrEmpty(q))
+            {
+                q = q.ToLower();
+                query = query.Where(x => x.FullName.ToLower().Contains(q) ||
+                                         x.Email.ToLower().Contains(q));
+            }
+
+            // Performans ve Güvenlik için sadece ihtiyacımız olan alanları seçiyoruz (Projection)
+            var users = await query.Select(x => new
+            {
+                x.Id,
+                x.FullName,
+                x.Email,
+                x.Gender,
+                // Yaşı hesaplamak için doğum yılını alıyoruz
+                BirthYear = x.BirthDate.Year
+            }).ToListAsync();
+
+            return Json(users);
+        }
+
+        // 7. SİLME (Soft Delete + Kick User)
         public async Task<IActionResult> Delete(string id)
         {
             var user = await _userManager.FindByIdAsync(id);
