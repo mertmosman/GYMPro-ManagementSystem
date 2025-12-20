@@ -18,7 +18,7 @@ namespace GymApp.Web.Data
                 await roleManager.CreateAsync(new IdentityRole("Member"));
 
             // 2. ADMIN KULLANCISINI OLUŞTUR
-            var adminEmail = "ogrencinumarasi@sakarya.edu.tr"; // Numaranı buraya yaz
+            var adminEmail = "b241210350@sakarya.edu.tr"; // Numaranı buraya yaz
             var adminUser = await userManager.FindByEmailAsync(adminEmail);
 
             if (adminUser == null)
